@@ -1,20 +1,30 @@
 {
-  "name": "javascript",
+  "name": "js-sandbox",
   "version": "1.0.0",
-  "description": "Login with google",
-  "license": "ISC",
-  "author": "",
-  "type": "module",
-  "main": "server.js",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.mjs"
   },
-  "devDependencies": {
-    "nodemon": "^3.1.10"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yzung/JS-Sandbox.git"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Yzung/JS-Sandbox/issues"
+  },
+  "homepage": "https://github.com/Yzung/JS-Sandbox#readme",
   "dependencies": {
+    "@prisma/client": "^6.8.2",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "express-session": "^1.18.1"
+    "prisma": "^6.8.2",
+    "prisma-erd-generator": "^2.0.4",
+    "puppeteer": "^24.9.0"
   }
 }

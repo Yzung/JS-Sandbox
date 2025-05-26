@@ -1,0 +1,265 @@
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "./erd.pdf"
+  theme    = "forest"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --------- ENUMS ---------
+
+enum TipoUso {
+  CONTINUO
+  DESCARTAVEL
+}
+
+enum TipoTransacao {
+  RECORRENTE
+  VARIAVEL
+}
+
+enum TipoEndereco {
+  PESSOAL
+  COMERCIAL
+}
+
+// --------- MODELS ---------
+
+model User {
+  id          Int       @id @default(autoincrement())
+  nome        String
+  sobrenome   String
+  hashSenha   String
+  criadoEm    DateTime  @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  // Relacionamentos
+  emails       Email[]
+  telefones    Telefone[]
+  enderecos    Endereco[]
+  entradas     Entrada[]
+  saidas       Saida[]
+  contas       Conta[]
+  receitas     Receita[]
+  compras      Compra[]
+  estoques     Estoque[]
+}
+
+model Email {
+  id       Int    @id @default(autoincrement())
+  email    String
+  userId   Int
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([email, userId])
+  atualizadoEm DateTime @updatedAt
+}
+
+model Telefone {
+  id       Int    @id @default(autoincrement())
+  numero   String
+  ddd      Int
+  userId   Int
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([numero, userId])
+  atualizadoEm DateTime @updatedAt
+}
+
+model Localidade {
+  id          Int       @id @default(autoincrement())
+  cidade      String
+  bairro      String
+
+  enderecos   Endereco[]
+
+  atualizadoEm DateTime @updatedAt
+}
+
+model Endereco {
+  id           Int          @id @default(autoincrement())
+  tipo         TipoEndereco
+  rua          String
+  numero       String
+  userId       Int
+  localidadeId Int
+
+  user        User       @relation(fields: [userId], references: [id])
+  localidade  Localidade @relation(fields: [localidadeId], references: [id])
+
+  @@unique([rua, numero, localidadeId, userId, tipo])
+  atualizadoEm DateTime @updatedAt
+}
+
+model Conta {
+  id           Int      @id @default(autoincrement())
+  nome         String
+  banco        String
+  saldo        Int      @default(0) // Em centavos
+  userId       Int
+
+  user         User     @relation(fields: [userId], references: [id])
+  entradas     Entrada[]
+  saidas       Saida[]
+
+  atualizadoEm DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Entrada {
+  id           Int          @id @default(autoincrement())
+  nome         String
+  tipo         TipoTransacao
+  data         DateTime
+  valor        Int          // Em centavos
+  userId       Int
+  contaId      Int
+
+  user         User         @relation(fields: [userId], references: [id])
+  conta        Conta        @relation(fields: [contaId], references: [id])
+
+  @@unique([nome, userId])
+  atualizadoEm DateTime @updatedAt
+}
+
+model Saida {
+  id           Int          @id @default(autoincrement())
+  nome         String
+  tipo         TipoTransacao
+  data         DateTime
+  valor        Int          // Em centavos
+  userId       Int
+  contaId      Int
+
+  user         User         @relation(fields: [userId], references: [id])
+  conta        Conta        @relation(fields: [contaId], references: [id])
+
+  @@unique([nome, userId])
+  atualizadoEm DateTime @updatedAt
+}
+
+model Receita {
+  id            Int       @id @default(autoincrement())
+  nome          String    @unique
+  dataTentativa DateTime
+  nota          String?   // Texto livre
+  userId        Int
+
+  user          User      @relation(fields: [userId], references: [id])
+
+  metadados     Json?     // Flexibilidade extra para tags e atributos dinâmicos
+
+  atualizadoEm  DateTime  @updatedAt
+}
+
+model Unidade {
+  id           Int        @id @default(autoincrement())
+  nome         String
+  sigla        String
+
+  produtos     Produto[]
+  estoques     Estoque[]
+  compras      Compra[]
+
+  atualizadoEm DateTime   @updatedAt
+}
+
+model Categoria {
+  id           Int        @id @default(autoincrement())
+  nome         String
+  descricao    String?
+
+  produtos     Produto[]
+
+  atualizadoEm DateTime   @updatedAt
+}
+
+model Lote {
+  id           Int        @id @default(autoincrement())
+  nome         String
+  validade     DateTime
+  quantidade   Int
+
+  estoques     Estoque[]
+
+  atualizadoEm DateTime   @updatedAt
+}
+
+model Produto {
+  id           Int        @id @default(autoincrement())
+  nome         String
+  descricao    String?
+  valor        Int        // Em centavos
+  criadoEm     DateTime   @default(now())
+  atualizadoEm DateTime   @updatedAt
+  uso          TipoUso
+  fotoUrl      String?
+  dataCompra   DateTime?
+
+  categoriaId  Int
+  unidadeId    Int
+
+  categoria    Categoria  @relation(fields: [categoriaId], references: [id])
+  unidade      Unidade    @relation(fields: [unidadeId], references: [id])
+
+  estoques     Estoque[]
+  compras      Compra[]
+}
+
+model Estoque {
+  id           Int        @id @default(autoincrement())
+  userId       Int
+  produtoId    Int
+  loteId       Int
+  unidadeId    Int
+  quantidade   Int
+
+  produto      Produto    @relation(fields: [produtoId], references: [id])
+  lote         Lote       @relation(fields: [loteId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
+  unidade      Unidade    @relation(fields: [unidadeId], references: [id])
+
+  atualizadoEm DateTime   @updatedAt
+
+  @@index([userId])
+}
+
+model Lista {
+  id           Int        @id @default(autoincrement())
+  nome         String
+  descricao    String?
+  valorTotal   Int        // Em centavos
+  finalizada   Boolean
+  dataCriada   DateTime   @default(now())
+  atualizadoEm DateTime   @updatedAt
+
+  compras      Compra[]
+}
+
+model Compra {
+  id           Int        @id @default(autoincrement())
+  listaId      Int
+  produtoId    Int
+  userId       Int
+  unidadeId    Int
+  quantidade   Int
+  dataCompra   DateTime   @default(now())
+  atualizadoEm DateTime   @updatedAt
+
+  lista        Lista      @relation(fields: [listaId], references: [id])
+  produto      Produto    @relation(fields: [produtoId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
+  unidade      Unidade    @relation(fields: [unidadeId], references: [id])
+
+  @@unique([listaId, produtoId, userId])
+}

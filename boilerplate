@@ -1,0 +1,129 @@
+/* Boilerplate AXCEL ATHL - React + Vite + Tailwind */
+
+// tailwind.config.js
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        charcoal: '#121212',
+        darkGray: '#3A3A3A',
+        offWhite: '#EDEDED',
+      },
+      fontFamily: {
+        eurostile: ['Eurostile Extended', 'sans-serif'],
+      },
+    },
+  },
+  plugins: [],
+};
+
+// src/components/HeroSection.jsx
+import React from 'react';
+
+const HeroSection = () => (
+  <section className="relative h-screen bg-charcoal text-offWhite font-eurostile uppercase">
+    <video
+      className="absolute w-full h-full object-cover"
+      src="/videos/hero.mp4"
+      autoPlay
+      loop
+      muted
+    />
+    <div className="relative z-10 flex items-center justify-center h-full">
+      <h1 className="text-4xl font-bold">Porque Cada Movimento Importa</h1>
+    </div>
+  </section>
+);
+
+export default HeroSection;
+
+// src/components/ProductCard.jsx
+import React from 'react';
+
+const ProductCard = ({ product }) => (
+  <div className="bg-darkGray p-4 text-offWhite">
+    <img src={product.image} alt={product.name} className="w-full h-64 object-cover" />
+    <h2 className="mt-4 font-bold uppercase font-eurostile">{product.name}</h2>
+    <p className="mt-2">R$ {product.price}</p>
+    <button className="mt-4 bg-offWhite text-charcoal px-4 py-2 uppercase font-eurostile">Comprar</button>
+  </div>
+);
+
+export default ProductCard;
+
+// src/components/ProductGrid.jsx
+import React from 'react';
+import ProductCard from './ProductCard';
+
+const ProductGrid = ({ products }) => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    {products.map((product) => (
+      <ProductCard key={product.id} product={product} />
+    ))}
+  </div>
+);
+
+export default ProductGrid;
+
+// src/components/CheckoutForm.jsx
+import React from 'react';
+
+const CheckoutForm = () => (
+  <form className="text-offWhite font-eurostile">
+    <label className="block mb-2 uppercase">Nome Completo</label>
+    <input type="text" className="w-full mb-4 p-2 bg-charcoal border border-offWhite" />
+    <label className="block mb-2 uppercase">Endereço</label>
+    <input type="text" className="w-full mb-4 p-2 bg-charcoal border border-offWhite" />
+    <button type="submit" className="bg-offWhite text-charcoal px-4 py-2 uppercase">Finalizar Compra</button>
+  </form>
+);
+
+export default CheckoutForm;
+
+// src/pages/Home.jsx
+import React from 'react';
+import HeroSection from '../components/HeroSection';
+import ProductGrid from '../components/ProductGrid';
+
+const mockProducts = [
+  { id: 1, name: 'Camiseta Performance', image: '/images/product1.jpg', price: 149.90 },
+  { id: 2, name: 'Shorts AXCEL', image: '/images/product2.jpg', price: 129.90 },
+];
+
+const Home = () => (
+  <div className="bg-charcoal min-h-screen">
+    <HeroSection />
+    <div className="p-8">
+      <ProductGrid products={mockProducts} />
+    </div>
+  </div>
+);
+
+export default Home;
+
+// src/main.jsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import Home from './pages/Home';
+import './index.css';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <Home />
+  </React.StrictMode>
+);
+
+// src/index.css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Eurostile Extended', sans-serif;
+  background-color: #121212;
+  color: #EDEDED;
+}
+
+// public/videos/hero.mp4 - vídeo cinemático com movimento e esforço
+// public/images/ - imagens dos produtos mockados
