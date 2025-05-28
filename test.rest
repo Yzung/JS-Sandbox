@@ -1,0 +1,13 @@
+### GET Method
+GET http://localhost:3000/api/users
+
+### POST Method
+POST http://localhost:3000/api/users
+
+### DELETE Method
+DELETE http://localhost:3000/api/users/{id}
+
+### UPDATE Method
+PUT http://localhost:3000/api/users/{id}
+
+

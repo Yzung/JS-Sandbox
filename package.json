@@ -25,6 +25,11 @@
     "express": "^5.1.0",
     "prisma": "^6.8.2",
     "prisma-erd-generator": "^2.0.4",
-    "puppeteer": "^24.9.0"
+    "puppeteer": "^24.9.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "prisma-markdown": "^3.0.1"
   }
 }

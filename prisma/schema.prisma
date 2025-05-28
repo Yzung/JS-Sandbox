@@ -1,7 +1,7 @@
-generator erd {
-  provider = "prisma-erd-generator"
-  output   = "./erd.pdf"
-  theme    = "forest"
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "./ERD.md"
+  title    = "Documentação do Banco de Dados"
 }
 
 generator client {
